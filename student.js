@@ -1,5 +1,6 @@
 const express = require("express");
 const mysql = require("mysql2");
+require("dotenv").config();
 
 const app = express();
 
@@ -7,15 +8,17 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "admin",
-    database: "student_db"
+   host: process.env.host,
+   user: process.env.user,
+   password: process.env.password,
+   database: process.env.database,
+   port: process.env.db_port
 });
 
 db.connect((err) => {
     if (err){
         console.log("Connection failed!");
+        console.log(err);
     }
     else{
         console.log("Succefully connected")
@@ -47,7 +50,7 @@ app.get("/liststudent", (req, res) => {
         return res.json(results);
     })
 });
-
-app.listen(3000, () => {
-    console.log("Server running on port 3000");
+const port = process.env.port;
+app.listen(port, () => {
+    console.log("Server running on port ",port);
 });
