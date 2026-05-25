@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Student Management</title>
+
+    <style>
+
+        body{
+            font-family: Arial;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container{
+            width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        input{
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        button{
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .student{
+            background: #eee;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+    </style>
+
+</head>
+
+ 
+
+<body>
+
+    <h1>Student Management</h1>
+
+    <input type="text" id="name" placeholder="Enter Name">
+
+    <input type="text" id="rollno" placeholder="Enter Roll No">
+
+    <input type="text" id="clas" placeholder="Enter Class">
+
+    <button onclick="addStudent()">
+        Add Student
+    </button>
+
+    <div id="studentList"></div>
+
+<script>
+
+    // YOUR BACKEND URL
+    const API_URL = "http://localhost:3000";
+
+
+    // GET STUDENTS
+    async function getStudents(){
+
+        const response =
+            await fetch(`${API_URL}/liststudent`);
+
+        const students = await response.json();
+
+        const studentList =
+            document.getElementById("studentList");
+
+        studentList.innerHTML = "";
+
+        students.forEach((student) => {
+
+            studentList.innerHTML += `
+
+                <div>
+
+                    <h3>${student.name}</h3>
+
+                    <p>Roll No: ${student.rollno}</p>
+
+                    <p>Class: ${student.clas}</p>
+
+                    <button onclick="updateStudent('${student.rollno}')">
+                        Update
+                    </button>
+
+                    <button onclick="deleteStudent('${student.rollno}')">
+                        Delete
+                    </button>
+
+                    <hr>
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+
+    // ADD STUDENT
+    async function addStudent(){
+
+        const name =
+            document.getElementById("name").value;
+
+        const rollno =
+            document.getElementById("rollno").value;
+
+        const clas =
+            document.getElementById("clas").value;
+
+        await fetch(`${API_URL}/addstudent`, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                name,
+                rollno,
+                clas
+            })
+
+        });
+
+        getStudents();
+
+    }
+
+
+    // UPDATE STUDENT
+    async function updateStudent(rollno){
+
+        const newName =
+            prompt("Enter new name");
+
+        const newClass =
+            prompt("Enter new class");
+
+        await fetch(
+            `${API_URL}/updatestudent/${rollno}`,
+            {
+
+                method: "PUT",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    name: newName,
+                    clas: newClass
+                })
+
+            }
+        );
+
+        getStudents();
+
+    }
+
+
+    // DELETE STUDENT
+    async function deleteStudent(rollno){
+
+        await fetch(
+            `${API_URL}/deletestudent/${rollno}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        getStudents();
+
+    }
+
+
+    // LOAD STUDENTS
+    getStudents();
+
+</script>
+
+</body>
+</html>
