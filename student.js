@@ -10,11 +10,14 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
 const db = mysql.createConnection({
-   host: process.env.host,
-   user: process.env.user,
-   password: process.env.password,
-   database: process.env.database,
-   port: process.env.db_port
+   host: process.env.MYSQLHOST,
+   user: process.env.MYSQLUSER,
+   password: process.env.MYSQLPASSWORD,
+   database: process.env.MYSQLDATABASE,
+   port: process.env.MYSQLPORT,
+   ssl: {
+   rejectUnauthorized: false
+}
 });
 
 db.connect((err) => {
@@ -80,7 +83,7 @@ app.delete("/deletestudent/:rollno", (req, res) => {
         res.send(`rollno ${rollno} deleted sucessfully`)
     })
 });
-const port = process.env.port;
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log("Server running on port ",port);
 });
